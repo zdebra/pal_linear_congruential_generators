@@ -1,17 +1,18 @@
 #include <iostream>
 #include <math.h>
 
-bool* prime_divisors(int m);
-int divisor_count(int m);
-
 struct PrimeDivisor{
-    int value;
+    unsigned int value;
     PrimeDivisor *next;
 };
 
+PrimeDivisor* prime_divisors(unsigned int m);
+int divisor_count(int m);
+
+
 int main() {
 
-    int a_min, a_max, c_min, c_max, m_min, m_max, d;
+    unsigned int a_min, a_max, c_min, c_max, m_min, m_max, d;
 
   /*  std::cin >> a_min;
     std::cin >> a_max;
@@ -22,37 +23,53 @@ int main() {
     std::cin >> d;*/
 
 
-    int m = 24;
-    bool *b = prime_divisors(m);
-    for(int i=0; i < m-1; i++) {
-        std::cout << i+2 << ": " << b[i] << std::endl;
-    }
+    unsigned int m = 4000;
+    PrimeDivisor *f = prime_divisors(m);
+    do {
+
+        std::cout << f->value << std::endl;
+
+    } while((f = f->next) != NULL && f->value != 0);
 
     return 0;
 }
 
 // enhanced eratosthenes sieve
-bool* prime_divisors(int n) {
-    int size = n-1;
+// todo: maybe there is not neccesary to use whole sized array (just a half should be enough)
+PrimeDivisor* prime_divisors(unsigned int n) {
+    PrimeDivisor *cur = new PrimeDivisor();
+    PrimeDivisor *first = cur;
+    unsigned int size = n-1;
     bool* a = new bool[size];
-    for(int i=0; i<size; i++) {
+    for(unsigned int i=0; i<size; i++) {
         a[i] = true;
     }
-    int sq = ceil(sqrt(n));
-    for(int i=2; i<=sq; i++) {
-        if(a[i-2]==true) {
-            for(int j=i*i; j<=n;j+=i) {
+    unsigned int sq = ceil(sqrt(n));
+    for(unsigned int i=2; i<=sq; i++) {
+        if(a[i-2]) {
+            for(unsigned int j=i*i; j<=n;j+=i) {
                 a[j-2] = false;
             }
-            a[i-2] = (n%i) == 0;
+
+            //push it man
+            if((n%i) == 0) {
+                cur->value = i;
+                cur->next = new PrimeDivisor();
+                cur = cur->next;
+            }
+        }
+    }
+    for(unsigned int i=sq+1;i<=ceil(n/2);i++) {
+        if(a[i-2] && n%i==0) {
+            cur->value = i;
+            cur->next = new PrimeDivisor();
+            cur = cur->next;
         }
     }
 
-    for(int i=sq+1; i<n; i++) {
-        a[i-2] = false;
-    }
+    delete[] a;
 
-    return a;
+    return first;
 }
 
 // using http://stackoverflow.com/questions/110344/algorithm-to-calculate-the-number-of-divisors-of-a-given-number
