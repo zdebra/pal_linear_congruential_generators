@@ -1,8 +1,13 @@
 #include <iostream>
 #include <math.h>
 
-bool* eratosthenes_sieve(int m);
+bool* prime_divisors(int m);
 int divisor_count(int m);
+
+struct PrimeDivisor{
+    int value;
+    PrimeDivisor *next;
+};
 
 int main() {
 
@@ -18,7 +23,7 @@ int main() {
 
 
     int m = 24;
-    bool *b = eratosthenes_sieve(m);
+    bool *b = prime_divisors(m);
     for(int i=0; i < m-1; i++) {
         std::cout << i+2 << ": " << b[i] << std::endl;
     }
@@ -26,8 +31,8 @@ int main() {
     return 0;
 }
 
-
-bool* eratosthenes_sieve(int n) {
+// enhanced eratosthenes sieve
+bool* prime_divisors(int n) {
     int size = n-1;
     bool* a = new bool[size];
     for(int i=0; i<size; i++) {
@@ -39,12 +44,14 @@ bool* eratosthenes_sieve(int n) {
             for(int j=i*i; j<=n;j+=i) {
                 a[j-2] = false;
             }
+            a[i-2] = (n%i) == 0;
         }
     }
-    /*for(int i=sq; i<n; i++) {
-        a[i] = false;
+
+    for(int i=sq+1; i<n; i++) {
+        a[i-2] = false;
     }
-    */
+
     return a;
 }
 
