@@ -7,31 +7,65 @@ struct PrimeDivisor{
 };
 
 PrimeDivisor* prime_divisors(unsigned int m);
-int divisor_count(int m);
+unsigned int divisor_count(unsigned int m);
+bool is_coprime(unsigned int a, unsigned int b);
 
 
 int main() {
 
     unsigned int a_min, a_max, c_min, c_max, m_min, m_max, d;
 
-  /*  std::cin >> a_min;
+    std::cin >> a_min;
     std::cin >> a_max;
     std::cin >> c_min;
     std::cin >> c_max;
     std::cin >> m_min;
     std::cin >> m_max;
-    std::cin >> d;*/
+    std::cin >> d;
+
+    unsigned int total = 0;
+    for(unsigned int m = m_min; m<=m_max; m++) {
+
+        if(divisor_count(m) >= d) {
+            PrimeDivisor *head = prime_divisors(m);
+            for(unsigned int c = c_min; c<=c_max; c++) {
+
+                if(is_coprime(m,c)) {
+
+                    for(unsigned int a = a_min; a <= a_max; a++) {
+                        PrimeDivisor *cur = head;
+                        bool stop = false;
+                        if(cur->value != 0) {
+                            do {
+
+                                if ((a - 1) % cur->value != 0) stop = true;
+
+                            } while ((cur->next != NULL) && cur->value != 0 && !stop);
+                        }
+
+                        if(!stop) {
+                            if(m%4==0) {
+                                if((a-1)%4==0) total++;
+                            } else {
+                                total++;
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
+            //todo delete prime divisors from memory here.
+
+        }
+
+    }
+
+    std::cout << total;
 
 
-    unsigned int m = 4000;
-    PrimeDivisor *f = prime_divisors(m);
-    do {
-
-        std::cout << f->value << std::endl;
-
-    } while((f = f->next) != NULL && f->value != 0);
-
-    return 0;
 }
 
 // enhanced eratosthenes sieve
@@ -73,13 +107,13 @@ PrimeDivisor* prime_divisors(unsigned int n) {
 }
 
 // using http://stackoverflow.com/questions/110344/algorithm-to-calculate-the-number-of-divisors-of-a-given-number
-int divisor_count(int x) {
-    int limit = x;
-    int numberOfDivisors = 0;
+unsigned int divisor_count(unsigned int x) {
+    unsigned int limit = x;
+    unsigned int numberOfDivisors = 0;
 
     if (x == 1) return 1;
 
-    for (int i = 1; i < limit; ++i) {
+    for (unsigned int i = 1; i < limit; ++i) {
         if (x % i == 0) {
             limit = x / i;
             if (limit != i) {
@@ -90,4 +124,8 @@ int divisor_count(int x) {
     }
 
     return numberOfDivisors;
+}
+
+bool is_coprime(unsigned int a, unsigned int b) {
+    return a%b==0 || b%a==0;
 }
