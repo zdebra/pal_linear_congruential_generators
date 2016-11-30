@@ -10,9 +10,8 @@ struct PrimeDivisor{
 
 PrimeDivisor* prime_divisors(unsigned int m);
 PrimeDivisor* get_tail(PrimeDivisor *head);
-unsigned int divisor_count(unsigned int m);
 bool is_coprime(unsigned int a, unsigned int b);
-int divisors_count(PrimeDivisor* head, unsigned int m);
+unsigned int divisors_count(PrimeDivisor* head, unsigned int m);
 
 int main() {
 /*
@@ -34,7 +33,8 @@ int main() {
 
     }*/
 
-    unsigned int m = 28020111;
+
+    unsigned int m = 24;
     PrimeDivisor *head = prime_divisors(m);
     PrimeDivisor *cur = head;
     while(cur != NULL && cur->value!=0) {
@@ -51,7 +51,6 @@ int main() {
 }
 
 // enhanced eratosthenes sieve
-// todo: maybe there is not neccesary to use whole sized array (just a half should be enough)
 PrimeDivisor* prime_divisors(unsigned int n) {
     PrimeDivisor *cur = new PrimeDivisor();
     PrimeDivisor *first = cur;
@@ -90,9 +89,13 @@ PrimeDivisor* prime_divisors(unsigned int n) {
     return first;
 }
 
-int divisors_count(PrimeDivisor* head, unsigned int m) {
+unsigned int divisors_count(PrimeDivisor* head, unsigned int m) {
 
-    int count = 1;
+    if(m==1) {
+        return 1;
+    }
+
+    unsigned int count = 1;
 
     PrimeDivisor *cur = head;
     while(cur != NULL && cur->value != 0) {
@@ -108,6 +111,9 @@ int divisors_count(PrimeDivisor* head, unsigned int m) {
 
     }
 
+    if(count==1) {
+        count++;
+    }
 
     return count;
 
@@ -122,27 +128,7 @@ PrimeDivisor* get_tail(PrimeDivisor *head) {
     }
     return cur;
 }
-/*
-// using http://stackoverflow.com/questions/110344/algorithm-to-calculate-the-number-of-divisors-of-a-given-number
-unsigned int divisor_count(unsigned int x) {
-    unsigned int limit = x;
-    unsigned int numberOfDivisors = 0;
 
-    if (x == 1) return 1;
-
-    for (unsigned int i = 1; i < limit; ++i) {
-        if (x % i == 0) {
-            limit = x / i;
-            if (limit != i) {
-                numberOfDivisors++;
-            }
-            numberOfDivisors++;
-        }
-    }
-
-    return numberOfDivisors;
-}
-*/
 bool is_coprime(unsigned int a, unsigned int b) {
     return a%b==0 || b%a==0;
 }
