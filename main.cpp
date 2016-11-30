@@ -5,16 +5,15 @@ struct PrimeDivisor{
     unsigned int value;
     unsigned int count;
     PrimeDivisor *next;
-    PrimeDivisor *prev;
 };
 
 PrimeDivisor* prime_divisors(unsigned int m);
-PrimeDivisor* get_tail(PrimeDivisor *head);
-bool is_coprime(unsigned int a, unsigned int b);
+bool is_divisible(unsigned int a, unsigned int b, PrimeDivisor *head);
+bool is_coprime(PrimeDivisor *head, unsigned int a, unsigned int b);
 unsigned int divisors_count(PrimeDivisor* head, unsigned int m);
 
 int main() {
-/*
+
     unsigned int a_min, a_max, c_min, c_max, m_min, m_max, d;
 
     std::cin >> a_min;
@@ -25,16 +24,38 @@ int main() {
     std::cin >> m_max;
     std::cin >> d;
 
+    unsigned int count = 0;
 
     for(unsigned int m=m_min; m<m_max+1; m++) {
 
-        PrimeDivisor *cur = prime_divisors(m);
-        int divisors = divisors_count(cur, m);
+        PrimeDivisor *head = prime_divisors(m);
+        if(divisors_count(head, m) >= d) {
+            for(unsigned int c=c_min; c<c_max+1; c++) {
 
-    }*/
+                if(is_coprime(head, m, c)) {
+                    //std::cout << "m: " << m << ", c: " << c << std::endl;
 
+                    for(unsigned int a = a_min; a<a_max+1; a++) {
+                        if(is_divisible(a-1, m, head)) {
+                            //std::cout << "a: " << a << ", c: " << c << ", m: " << m << std::endl;
 
-    unsigned int m = 24;
+                            if(m%4!=0 || (m%4==0 && (a-1)%4==0)) {
+                                count++;
+                                //std::cout << "a: " << a << ", c: " << c << ", m: " << m << std::endl;
+                            }
+                        }
+                    }
+
+                }
+
+            }
+        }
+
+    }
+
+    std::cout << count;
+
+    /*unsigned int m = 24;
     PrimeDivisor *head = prime_divisors(m);
     PrimeDivisor *cur = head;
     while(cur != NULL && cur->value!=0) {
@@ -43,11 +64,32 @@ int main() {
     }
 
     std::cout << "--" << std::endl << divisors_count(head, m)  << std::endl;
+    */
 
 
 
 
+}
 
+bool is_divisible(unsigned int a, unsigned int b, PrimeDivisor *head) {
+
+    if(a==0) {
+        return true;
+    }
+
+    // m is prime number
+    if(head->value == 0) {
+        return a%b == 0;
+    }
+
+    PrimeDivisor *cur = head;
+    while(cur != NULL && cur->value!=0) {
+        if(a%cur->value != 0) {
+            return false;
+        }
+        cur = cur->next;
+    }
+    return true;
 }
 
 // enhanced eratosthenes sieve
@@ -72,7 +114,6 @@ PrimeDivisor* prime_divisors(unsigned int n) {
                 cur->next = new PrimeDivisor();
                 PrimeDivisor *tmp = cur;
                 cur = cur->next;
-                cur->prev = tmp;
             }
         }
     }
@@ -121,14 +162,13 @@ unsigned int divisors_count(PrimeDivisor* head, unsigned int m) {
 
 }
 
-PrimeDivisor* get_tail(PrimeDivisor *head) {
+bool is_coprime(PrimeDivisor *head, unsigned int a, unsigned int b) {
     PrimeDivisor *cur = head;
-    while(cur->next != NULL && cur->next->value != 0) {
+    while(cur != NULL && cur->value != 0) {
+        if(b%cur->value == 0) {
+            return false;
+        }
         cur = cur->next;
     }
-    return cur;
-}
-
-bool is_coprime(unsigned int a, unsigned int b) {
-    return a%b==0 || b%a==0;
+    return b%a != 0;
 }
